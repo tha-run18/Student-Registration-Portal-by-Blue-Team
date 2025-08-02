@@ -1,0 +1,122 @@
+CREATE TABLE undergraduate_students (
+    student_id SERIAL PRIMARY KEY,
+    student_number VARCHAR(20) UNIQUE NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    classification VARCHAR(15) NOT NULL CHECK (classification IN ('Freshman', 'Sophomore', 'Junior', 'Senior')),
+    major VARCHAR(100),
+    gpa DECIMAL(3,2),
+    enrollment_status VARCHAR(20) DEFAULT 'Active',
+    admission_date DATE NOT NULL
+);
+
+
+CREATE TABLE courses (
+    course_id VARCHAR(10) PRIMARY KEY,
+    discipline VARCHAR(50) NOT NULL,
+    course_number VARCHAR(10) NOT NULL
+);
+
+
+
+CREATE TABLE instructors (
+    instructor_id VARCHAR(10) PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    degree_institute VARCHAR(100),
+    degree_type VARCHAR(20)
+);
+
+
+
+CREATE TABLE sections (
+    section_id VARCHAR(20) PRIMARY KEY,
+    course_id VARCHAR(10) NOT NULL,
+    semester VARCHAR(20) NOT NULL,
+    section_number VARCHAR(3) NOT NULL,
+    instructor_id VARCHAR(10) NOT NULL,
+    FOREIGN KEY (course_id) REFERENCES courses(course_id),
+    FOREIGN KEY (instructor_id) REFERENCES instructors(instructor_id)
+);
+
+
+
+CREATE TABLE roster (
+    roster_id SERIAL PRIMARY KEY,
+    student_id INT NOT NULL,
+    section_id VARCHAR(20) NOT NULL,
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    grade VARCHAR(2),
+    FOREIGN KEY (student_id) REFERENCES undergraduate_students(student_id),
+    FOREIGN KEY (section_id) REFERENCES sections(section_id),
+    UNIQUE (student_id, section_id)
+);
+
+
+
+
+
+
+
+
+-----students
+
+
+INSERT INTO undergraduate_students (student_number, first_name, last_name, email, classification, major, gpa, admission_date) VALUES
+('UG2025001', 'Alice', 'Brown', 'alice.brown@university.edu', 'Freshman', 'Computer Science', 3.85, '2024-08-15'),
+('UG2025002', 'Bob', 'Clark', 'bob.clark@university.edu', 'Sophomore', 'Biology', 3.65, '2023-08-20'),
+('UG2025003', 'Carol', 'Davis', 'carol.davis@university.edu', 'Junior', 'Business', 3.45, '2022-08-18'),
+('UG2025004', 'Dan', 'Evans', 'dan.evans@university.edu', 'Senior', 'Engineering', 3.78, '2021-08-25'),
+('UG2025005', 'Eve', 'Frank', 'eve.frank@university.edu', 'Freshman', 'Mathematics', 3.91, '2024-08-28');
+
+
+
+
+
+-----courses
+
+INSERT INTO courses (course_id, discipline, course_number) VALUES
+('CS105', 'Computer Science', '105'),
+('BIO150', 'Biology', '150'),
+('BUS220', 'Business', '220'),
+('ENG300', 'Engineering', '300'),
+('MATH200', 'Mathematics', '200');
+
+
+
+-----instructors
+
+
+INSERT INTO instructors (instructor_id, first_name, last_name, department, email, degree_institute, degree_type) VALUES
+('INST100', 'Grace', 'Hopper', 'Computer Science', 'grace.hopper@university.edu', 'Yale University', 'PhD'),
+('INST101', 'Alan', 'Turing', 'Mathematics', 'alan.turing@university.edu', 'Princeton', 'PhD'),
+('INST102', 'Ada', 'Lovelace', 'Engineering', 'ada.lovelace@university.edu', 'University of London', 'PhD'),
+('INST103', 'Marie', 'Curie', 'Biology', 'marie.curie@university.edu', 'Sorbonne University', 'PhD'),
+('INST104', 'Elon', 'Musk', 'Business', 'elon.musk@university.edu', 'Wharton School', 'MBA');
+
+
+
+------sections
+
+INSERT INTO sections (section_id, course_id, semester, section_number, instructor_id) VALUES
+('CS105-001', 'CS105', 'Fall 2024', '001', 'INST100'),
+('BIO150-001', 'BIO150', 'Fall 2024', '001', 'INST103'),
+('BUS220-001', 'BUS220', 'Fall 2024', '001', 'INST104'),
+('ENG300-001', 'ENG300', 'Fall 2024', '001', 'INST102'),
+('MATH200-001', 'MATH200', 'Fall 2024', '001', 'INST101');
+
+
+
+-----roster
+
+
+INSERT INTO roster (student_id, section_id, enrollment_date, grade) VALUES
+(1, 'CS105-001', '2024-08-16', 'A'),
+(2, 'BIO150-001', '2024-08-18', 'B+'),
+(3, 'BUS220-001', '2024-08-20', 'A-'),
+(4, 'ENG300-001', '2024-08-22', 'B'),
+(5, 'MATH200-001', '2024-08-24', 'A');
+
